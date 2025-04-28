@@ -4,6 +4,12 @@
   "dependencies": {
     "@lightningjs/sdk": "^5.5.5"
   },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
   "scripts": {
     "prepare": "husky install"
   },

@@ -1,4 +1,5 @@
 import { Lightning } from "@lightningjs/sdk";
+import { HOME, SEARCH } from "./common/constant";
 
 class MediaTile extends Lightning.Component {
   static _template() {
@@ -22,13 +23,10 @@ class MediaTile extends Lightning.Component {
   }
 
   _focus() {
-    // this.tag("Border").setSmooth("alpha", 1);
     this.tag("Poster").setSmooth("scale", 1.1);
-    // console.log("isVisible", this.isVisible());
   }
 
   _unfocus() {
-    // this.tag("Border").setSmooth("alpha", 0);
     this.tag("Poster").setSmooth("scale", 1);
   }
 }
@@ -53,8 +51,10 @@ export default class MediaGrid extends Lightning.Component {
   }
 
   _inactive() {
-    this._itemIndex = 0;
-    this._prevIndex = 0;
+    if (this.parentName !== SEARCH) {
+      this._itemIndex = 0;
+      this._prevIndex = 0;
+    }
   }
 
   set items(list) {
@@ -66,7 +66,7 @@ export default class MediaGrid extends Lightning.Component {
     const gap = 30;
     const cardWidth = 220;
     const cardHeight = 330;
-    const containerSpace = this.parentName == "search" ? 50 : 0;
+    const containerSpace = this.parentName == SEARCH ? 50 : 0;
     this.tag("ItemsWrapper").children = this._items.map((item, index) => {
       return {
         type: MediaTile,
@@ -87,7 +87,7 @@ export default class MediaGrid extends Lightning.Component {
   updateTilePositions(xScrollPos) {
     const gap = 30;
     const cardWidth = 220;
-    const containerSpace = this.parentName == "search" ? 50 : 0;
+    const containerSpace = this.parentName == SEARCH ? 50 : 0;
     this.tag("ItemsWrapper").children.forEach((cData, index) => {
       cData.patch({
         smooth: {
@@ -121,16 +121,28 @@ export default class MediaGrid extends Lightning.Component {
 
     this._prevIndex = this._itemIndex;
 
-    // Scroll logic
-    /* const xTarget = -(current.x - 100); // pad left
-    const yTarget = -(current.y - 100); // pad top
+    const _element = this.tag("ItemsWrapper").getByRef(
+      "Tile" + this._itemIndex
+    );
 
-    wrapper.setSmooth("x", Math.max(Math.min(xTarget, 0), this.w - wrapper.w));
-    wrapper.setSmooth("y", Math.max(Math.min(yTarget, 0), this.h - wrapper.h)); */
+    if (this.parentName == HOME && !this.isVisible(_element)) {
+      this.parent.getByRef("HomeCarousel").patch({
+        smooth: {
+          alpha: 0,
+          duration: 0.1,
+        },
+      });
+      this.patch({
+        smooth: {
+          y: 0,
+          duration: 0.3,
+        },
+      });
+    }
   }
 
   _handleLeft() {
-    if (this._itemIndex == 0 && this.parentName == "search") {
+    if (this._itemIndex == 0 && this.parentName == SEARCH) {
       this._unfocus();
       this.parent._focus();
     } else {
@@ -172,7 +184,7 @@ export default class MediaGrid extends Lightning.Component {
 
   isVisible(_element) {
     const element = _element; // or this.tag('YourElement')
-    const stage = this.parentName == "search" ? this.parent : this.stage;
+    const stage = this.parentName == SEARCH ? this.parent : this.stage;
 
     // Get element bounds
     const elementRight = element.x + element.w;
@@ -184,7 +196,7 @@ export default class MediaGrid extends Lightning.Component {
       element.x < stage.w &&
       elementRight < stage.w &&
       elementBottom > 0 &&
-      element.y < stage.h
+      this.y + element.h < stage.h
     );
   }
 
@@ -192,12 +204,27 @@ export default class MediaGrid extends Lightning.Component {
     if (this._itemIndex - this._columns >= 0) {
       this._itemIndex -= this._columns;
       this._updateFocus();
-      /* const scrollHeight =
-        (Math.ceil(newIndex / this._columns) - 1) * (330 + 20); */
-      // this.setSmooth({ y: scrollHeight });
     } else {
       this._updateFocus(true);
       this.signal("itemClicked");
+      debugger;
+      if (
+        this.parentName == HOME &&
+        this.parent.getByRef("HomeCarousel").alpha == 0
+      ) {
+        this.parent.getByRef("HomeCarousel").patch({
+          smooth: {
+            duration: 0.1,
+            alpha: 1,
+          },
+        });
+        this.patch({
+          smooth: {
+            y: 580,
+            duration: 0.3,
+          },
+        });
+      }
     }
   }
 

@@ -1,16 +1,25 @@
 import { Lightning } from "@lightningjs/sdk";
-import { fetchTrendingMovies } from "../utlity/api";
-import { HOME } from "../common/constant";
-import MediaGrid from "../MediaGridN";
+import MediaGrid from "../../MediaGridN";
+import { HOME } from "../../common/constant";
+import { fetchTrendingMovies } from "../../utlity/api";
+import Carousel from "./HomeCarousel";
 
 export default class Home extends Lightning.Component {
   static _template() {
     return {
+      Carousel: {
+        y: 0,
+        type: Carousel,
+        visible: true,
+        ref: "HomeCarousel",
+        alpha: 1,
+      },
       MediaGrid: {
         type: MediaGrid,
         x: 0,
-        y: 0,
+        y: 580,
         signals: { itemClicked: true },
+        parentName: HOME,
       },
     };
   }
@@ -47,6 +56,7 @@ export default class Home extends Lightning.Component {
     return this.tag("MediaGrid")._handleRight();
   }
   _handleDown() {
+    debugger;
     return this.tag("MediaGrid")._handleDown();
   }
 }

@@ -1,5 +1,5 @@
 import { Launch } from "@lightningjs/sdk";
-import NewMain from "./App.js";
+import App from "./App.js";
 
 export default function () {
   const stageData = {
@@ -11,6 +11,9 @@ export default function () {
       fullscreen: false,
     },
   };
+  const assetsPath = {
+    path: "./static",
+  };
 
-  return Launch(NewMain, stageData, ...arguments);
+  return Launch(App, stageData, assetsPath, ...arguments);
 }

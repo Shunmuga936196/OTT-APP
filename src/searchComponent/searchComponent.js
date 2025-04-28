@@ -69,7 +69,7 @@ export default class SearchComponent extends Lightning.Component {
         color: 0xfffffff,
         signals: { itemClicked: true },
         visible: true,
-        parentName: "search",
+        parentName: SEARCH,
         parentHeight: window.innerWidth / 2,
         parentWidth: window.innerHeight - 150,
         clipping: true,
@@ -183,7 +183,17 @@ export default class SearchComponent extends Lightning.Component {
 
   _refocusKeypad() {
     this._focusedKeyIndex = 0;
-    // this._setState("KeypadFocused");
+  }
+
+  _handleUp(event) {
+    if (
+      this.tag("MediaGrid").hasFocus() ||
+      !this.tag("SearchContainer.Keypad").visible
+    ) {
+      this.tag("MediaGrid")._unfocus();
+      this.signal("itemClicked");
+    }
+    return this._handleKey(event);
   }
 
   _handleLeft(event) {

@@ -1,11 +1,11 @@
 import { Lightning } from "@lightningjs/sdk";
 import TabBar from "./TabBar";
 import Movies from "./screensN/Movies";
-import Home from "./screensN/Home";
 import { TabList } from "./common/constant";
 import Trending from "./screensN/Trending";
 import Series from "./screensN/Series";
 import SearchComponent from "./searchComponent/searchComponent";
+import Home from "./screensN/Home/Home";
 
 export default class App extends Lightning.Component {
   static _template() {
@@ -24,10 +24,10 @@ export default class App extends Lightning.Component {
         signals: { itemClicked: true },
       };
     });
-
     return {
       w: window.innerWidth,
       h: window.innerHeight,
+      clearColor: 0xff1e1e1e,
       Tabs: {
         type: TabBar,
         x: 40,
